@@ -9,7 +9,7 @@ import watch from "redux-watch";
 
 // Declare this global namespace so it can be used from popup.js
 // @see startup();
-const TW = (window.TW = {});
+const TW = (globalThis.TW = {});
 
 /**
  * @todo: refactor into "get the ones to close" and "close 'em" So it can be tested.
@@ -87,11 +87,13 @@ const checkToClose = function (cutOff: ?number) {
   }
 };
 
-let checkToCloseTimeout: ?number;
 function scheduleCheckToClose() {
-  if (checkToCloseTimeout != null) window.clearTimeout(checkToCloseTimeout);
-  checkToCloseTimeout = window.setTimeout(checkToClose, settings.get("checkInterval"));
+  chrome.alarms.get("checkToCloseTimeout", alarm => {
+    if (alarm != null) chrome.alarms.clear("checkToCloseTimeout");
+    chrome.alarms.create("checkToCloseTimeout", {delayInMinutes: settings.get("checkInterval")});
+  });  // TODO: promisify once alarms.get API becomes stable
 }
+chrome.alarms.onAlarm.addListener(checkToClose);
 
 // Updates closed count badge in the URL bar whenever the store updates.
 function watchClosedCount(store) {

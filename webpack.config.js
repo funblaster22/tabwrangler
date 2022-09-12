@@ -75,6 +75,7 @@ module.exports = [
     output: {
       path: path.join(__dirname, "dist", "chrome"),
       filename: "[name].entry.js",
+      globalObject: "globalThis",
     },
     plugins: COMMON_CONFIG.plugins.concat([
       new webpack.DefinePlugin({
@@ -90,6 +91,7 @@ module.exports = [
     output: {
       path: path.join(__dirname, "dist", "firefox"),
       filename: "[name].entry.js",
+      globalObject: "globalThis",
     },
     plugins: COMMON_CONFIG.plugins.concat([
       new webpack.DefinePlugin({
